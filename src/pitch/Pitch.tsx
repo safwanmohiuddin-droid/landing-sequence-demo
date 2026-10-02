@@ -1,127 +1,18 @@
-// OWNED BY PACK C. Base version is content-complete and static; pack C adds scroll-driven motion with `motion/react` and keeps this copy.
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { animate, motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { PITCH } from './content';
-
-const Enter = ({ label }: { label: string }) => (
-  <a href="/app" className="inline-flex items-center gap-3 bg-accent text-white font-display font-semibold px-6 py-3 text-lg hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-    {label}
-    <span aria-hidden className="font-mono">→</span>
-  </a>
-);
-
-const Eyebrow = ({ children }: { children: string }) => (
-  <p className="font-mono text-xs tracking-[0.08em] uppercase text-muted">{children}</p>
-);
-
+import './pitch.css';
+const EASE = [.22, 1, .36, 1] as const;
+function Enter({label}:{label:string}) { return <a className="pitch-cta" href="/app">{label}<span aria-hidden="true">→</span></a>; }
+function Reveal({children,index=0}:{children:ReactNode;index?:number}) { const reduced=useReducedMotion(); return <motion.div initial={reduced?false:{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:reduced?0:.45,delay:index*.06,ease:EASE}}>{children}</motion.div>; }
+function Count({value,index}:{value:string;index:number}) { const reduced=useReducedMotion(),[number,setNumber]=useState(reduced?parseInt(value):0); useEffect(()=>{if(reduced){setNumber(parseInt(value));return;}const control=animate(0,parseInt(value),{duration:1.2,delay:index*.12,ease:EASE,onUpdate:n=>setNumber(Math.round(n))});const visibility=()=>{if(document.hidden)control.pause();else control.play();};const pause=()=>control.pause(),play=()=>{if(!document.hidden)control.play();};document.addEventListener('visibilitychange',visibility);window.addEventListener('blur',pause);window.addEventListener('focus',play);return()=>{control.stop();document.removeEventListener('visibilitychange',visibility);window.removeEventListener('blur',pause);window.removeEventListener('focus',play);};},[value,index,reduced]);return <>{number} <span>{value.replace(/^\d+\s*/,'')}</span></>; }
+function Loop() { const reduced=useReducedMotion();const points=[[190,35],[325,110],[325,240],[190,315],[55,240],[55,110]];return <svg className="loop-visual" viewBox="0 0 380 350" role="img" aria-label="Licence to bank, chequebook, lease, Tawtheeq and school seat"><motion.g initial={false} whileInView={reduced?undefined:{opacity:[1,.6,1]}} viewport={{once:true}} transition={{duration:.6,delay:.6,ease:EASE}}>{points.map(([x,y],i)=>{const next=points[(i+1)%6];return <g key={i}><motion.path d={`M ${x} ${y} L ${next[0]} ${next[1]}`} stroke="var(--crit)" strokeWidth="1.5" fill="none" initial={reduced?false:{pathLength:0}} whileInView={{pathLength:1}} viewport={{once:true}} transition={{duration:.4,delay:i*.08,ease:EASE}}/><path d={`M ${next[0]} ${next[1]} l -5 -6 8 2 Z`} fill="var(--crit)"/><rect x={x-52} y={y-16} width="104" height="32" fill="var(--surface)" stroke="var(--line)" rx="2"/><text x={x} y={y+4} textAnchor="middle" fill="var(--fg)" fontSize="12">{PITCH.problem.loop[i]}</text></g>;})}</motion.g></svg>; }
+const GRAPH_POS=[[95,45],[250,105],[70,160],[250,225],[100,275],[365,275]];
+function GraphNode({index,progress,reduced}:{index:number;progress:ReturnType<typeof useScroll>['scrollYProgress'];reduced:boolean}) { const x=useTransform(progress,[0,1],[35,GRAPH_POS[index][0]]),y=useTransform(progress,[0,1],[35+index*48,GRAPH_POS[index][1]]);return <motion.g style={{x:reduced?GRAPH_POS[index][0]:x,y:reduced?GRAPH_POS[index][1]:y}}><circle r="5" fill={index===1?'var(--crit)':'var(--accent)'}/><text x="12" y="4" fontSize="12" fill="var(--fg)">{['Licence','Bank','Office','Visas','Lease','School'][index]}</text></motion.g>; }
+function Discovery() { const ref=useRef<HTMLElement>(null),reduced=!!useReducedMotion();const {scrollYProgress}=useScroll({target:ref,offset:['start center','end center']});return <section id="discovery" className="pitch-section discovery-section" ref={ref}><div className="discovery-sticky"><h2>{PITCH.discovery.headline}</h2><p className="section-note">The value is in the edges.</p></div><div className="discovery-body"><p>{PITCH.discovery.body}</p><svg viewBox="0 0 460 330" role="img" aria-label="A sequential checklist becomes a dependency graph" className="graph-visual">{[[0,1],[0,2],[2,3],[1,4],[3,4],[4,5]].map(([a,b])=><motion.path key={`${a}-${b}`} d={`M ${GRAPH_POS[a][0]} ${GRAPH_POS[a][1]} L ${GRAPH_POS[b][0]} ${GRAPH_POS[b][1]}`} fill="none" stroke="var(--line)" strokeWidth="2" style={{pathLength:reduced?1:scrollYProgress}}/>)}{GRAPH_POS.map((_,i)=><GraphNode key={i} index={i} progress={scrollYProgress} reduced={reduced}/>)}</svg><p className="visual-caption">One company and every person, connected by what must happen first.</p></div></section>; }
+function Comparison() { const reduced=useReducedMotion();const x=(week:number)=>90+week*31;const rows=[{label:'Today',y:65,marker:13.2,bars:[[2,4,'Licence'],[5,10.8,'Bank'],[10.8,11.8,'Cheques'],[11.8,13.2,'Leases']]},{label:'Resequenced',y:165,marker:7.8,bars:[[0,1,'KYC'],[2,4,'Licence'],[4,7.8,'Bank'],[5.6,7,'Leases']]}];return <div className="comparison"><svg viewBox="0 0 560 270" role="img" aria-label="Baseline go-live week 13.2, resequenced week 7.8, 5.4 weeks earlier">{Array.from({length:15},(_,i)=><g key={i}><line x1={x(i)} x2={x(i)} y1="30" y2="215" stroke="var(--line)"/><text x={x(i)} y="20" fontSize="10" fill="var(--muted)" textAnchor="middle">{i}</text></g>)}{rows.map((row,index)=><g key={row.label}><text x="0" y={row.y+12} fill="var(--fg)" fontSize="11">{row.label}</text><motion.g initial={reduced?false:{opacity:0,clipPath:'inset(0 100% 0 0)'}} whileInView={{opacity:1,clipPath:'inset(0 0% 0 0)'}} viewport={{once:true}} transition={{duration:reduced?0:.6,delay:index*.3,ease:EASE}}>{row.bars.map(([start,end,label],i)=><g key={String(label)}><rect x={x(Number(start))} y={row.y+(index===1&&i===3?26:0)} width={(Number(end)-Number(start))*31} height="18" rx="2" fill={label==='Bank'?'var(--crit)':'var(--accent)'}/><text x={x(Number(start))} y={row.y-7+(index===1&&i===3?56:0)} fontSize="10" fill="var(--muted)">{label}</text></g>)}<line x1={x(row.marker)} x2={x(row.marker)} y1={row.y-15} y2={row.y+40} stroke="var(--crit)" strokeDasharray="3 3"/><text x={x(row.marker)} y={row.y+52} textAnchor="middle" fontSize="12" fill="var(--crit)">wk {row.marker}</text></motion.g></g>)}<motion.g initial={reduced?false:{opacity:0}} whileInView={{opacity:1}} viewport={{once:true}} transition={{duration:reduced?0:.3,delay:.8,ease:EASE}}><path d={`M ${x(7.8)} 227 v 8 H ${x(13.2)} v -8`} stroke="var(--accent)" fill="none"/><text x={x(10.5)} y="258" textAnchor="middle" fontSize="13" fill="var(--accent)">5.4 weeks earlier</text></motion.g></svg><p className="visual-caption">Modelled Preset A. Complete bank file plus three changed dependencies.</p></div>; }
 export default function Pitch() {
-  const p = PITCH;
-  return (
-    <div className="min-h-screen bg-bg text-fg">
-      <header className="sticky top-0 z-20 bg-bg/90 backdrop-blur border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
-          <span className="font-display font-bold tracking-tight">{p.wordmark}</span>
-          <a href="/app" className="font-mono text-sm text-accent underline underline-offset-4">Enter the demo</a>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-4">
-        <section id="hero" className="py-20 md:py-28 grid md:grid-cols-12 gap-10 items-end">
-          <div className="md:col-span-7">
-            <Eyebrow>Hub71+ AI Hackathon · Abu Dhabi relocation</Eyebrow>
-            <h1 className="font-display font-bold text-5xl md:text-7xl leading-[1.02] mt-4" style={{ textWrap: 'balance' }}>
-              {p.hero.headline[0]}<br /><span className="text-accent">{p.hero.headline[1]}</span>
-            </h1>
-            <p className="mt-6 text-lg max-w-[60ch]">{p.hero.sub}</p>
-            <div className="mt-8"><Enter label={p.hero.cta} /></div>
-          </div>
-          <ol className="md:col-span-5 grid gap-px bg-line border border-line">
-            {p.hero.numbers.map((n) => (
-              <li key={n.label} className="bg-surface p-5">
-                <div className="font-mono tnum text-3xl font-medium">{n.value}</div>
-                <div className="mt-1">{n.label}</div>
-                <div className="text-xs text-muted mt-1">{n.source}</div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section id="problem" className="py-16 border-t border-line grid md:grid-cols-12 gap-10">
-          <div className="md:col-span-5">
-            <Eyebrow>{p.problem.eyebrow}</Eyebrow>
-            <h2 className="font-display font-semibold text-3xl md:text-4xl mt-3" style={{ textWrap: 'balance' }}>{p.problem.headline}</h2>
-            <ol className="mt-6 flex flex-wrap gap-2 font-mono text-sm">
-              {p.problem.loop.map((s, i) => (
-                <li key={s} className="flex items-center gap-2"><span className="border border-line bg-surface px-2 py-1">{s}</span>{i < p.problem.loop.length - 1 && <span aria-hidden>→</span>}</li>
-              ))}
-            </ol>
-          </div>
-          <ul className="md:col-span-7 grid sm:grid-cols-2 gap-px bg-line border border-line">
-            {p.problem.facts.map((f) => (
-              <li key={f.value} className="bg-surface p-5">
-                <div className="font-mono tnum text-2xl text-crit">{f.value}</div>
-                <p className="mt-1 text-sm">{f.text}</p>
-                <p className="text-xs text-muted mt-2">{f.source}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section id="discovery" className="py-16 border-t border-line max-w-[70ch]">
-          <Eyebrow>{p.discovery.eyebrow}</Eyebrow>
-          <h2 className="font-display font-semibold text-3xl md:text-4xl mt-3" style={{ textWrap: 'balance' }}>{p.discovery.headline}</h2>
-          <p className="mt-5 text-lg">{p.discovery.body}</p>
-        </section>
-
-        <section id="solution" className="py-16 border-t border-line grid md:grid-cols-12 gap-10">
-          <div className="md:col-span-6">
-            <Eyebrow>{p.solution.eyebrow}</Eyebrow>
-            <h2 className="font-display font-semibold text-3xl md:text-4xl mt-3" style={{ textWrap: 'balance' }}>{p.solution.headline}</h2>
-            <ul className="mt-6 grid gap-3 list-disc pl-5">{p.solution.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
-            <div className="mt-8"><Enter label="See it move" /></div>
-          </div>
-          <div className="md:col-span-6 grid gap-px bg-line border border-line self-start">
-            {[p.solution.before, p.solution.after].map((row, i) => (
-              <div key={row.label} className="bg-surface p-5 grid grid-cols-[1fr_auto] gap-4 items-center">
-                <div>
-                  <div className="font-mono text-xs uppercase tracking-[0.08em] text-muted">{i === 0 ? 'Go-live today' : 'Go-live after three decisions'}</div>
-                  <div className="text-sm mt-1">{row.label}</div>
-                </div>
-                <div className={`font-mono tnum text-4xl font-medium ${i === 0 ? 'text-crit' : 'text-accent'}`}>wk {row.weeks}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {[p.data, p.ai].map((sec) => (
-          <section key={sec.eyebrow} className="py-16 border-t border-line">
-            <Eyebrow>{sec.eyebrow}</Eyebrow>
-            <h2 className="font-display font-semibold text-3xl md:text-4xl mt-3 max-w-[30ch]" style={{ textWrap: 'balance' }}>{sec.headline}</h2>
-            <ul className="mt-8 grid md:grid-cols-2 gap-px bg-line border border-line">
-              {sec.items.map((it) => (
-                <li key={it.title} className="bg-surface p-5"><h3 className="font-display font-semibold text-lg">{it.title}</h3><p className="mt-2 text-sm">{it.text}</p></li>
-              ))}
-            </ul>
-          </section>
-        ))}
-
-        <section id="world" className="py-16 border-t border-line">
-          <Eyebrow>{p.world.eyebrow}</Eyebrow>
-          <ul className="mt-6 grid md:grid-cols-4 gap-px bg-line border border-line">
-            {p.world.items.map((w) => (
-              <li key={w.place} className="bg-surface p-5"><div className="font-mono text-xs uppercase tracking-[0.08em] text-muted">{w.place}</div><p className="mt-2 text-sm">{w.lesson}</p></li>
-            ))}
-          </ul>
-        </section>
-
-        <section id="venture" className="py-20 border-t border-line grid md:grid-cols-12 gap-10 items-start">
-          <div className="md:col-span-7">
-            <Eyebrow>{p.venture.eyebrow}</Eyebrow>
-            <h2 className="font-display font-semibold text-3xl md:text-5xl mt-3" style={{ textWrap: 'balance' }}>{p.venture.headline}</h2>
-            <p className="mt-5 text-lg max-w-[65ch]">{p.venture.body}</p>
-          </div>
-          <div className="md:col-span-5 md:pt-14"><Enter label={p.venture.cta} /></div>
-        </section>
-      </main>
-      <footer className="border-t border-line"><div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted">{p.footer}</div></footer>
-    </div>
-  );
+  const p=PITCH,reduced=useReducedMotion(),{scrollYProgress}=useScroll();
+  useEffect(()=>{const enter=(event:KeyboardEvent)=>{if(event.key==='Enter'&&event.target===document.body)window.location.href='/app';};window.addEventListener('keydown',enter);return()=>window.removeEventListener('keydown',enter);},[]);
+  return <div className="pitch-page"><motion.div aria-hidden="true" className="pitch-progress" style={{scaleX:reduced?1:scrollYProgress}}/><header className="pitch-header"><a href="/" className="pitch-wordmark">{p.wordmark}</a><a href="/app">Enter the demo <span aria-hidden="true">→</span></a></header><main className="pitch-main"><section id="hero" className="pitch-hero"><div><p className="pitch-context">Hub71+ AI Hackathon · Abu Dhabi relocation</p><h1>{p.hero.headline.map((line,i)=><motion.span key={line} initial={reduced?false:{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:reduced?0:.5,delay:i*.08,ease:EASE}}>{i===1?<em>{line}</em>:line}</motion.span>)}</h1><p className="hero-sub">{p.hero.sub}</p><Enter label={p.hero.cta}/></div><ol className="hero-numbers">{p.hero.numbers.map((n,i)=><li key={n.label}><strong className="tnum"><Count value={n.value} index={i}/></strong><p>{n.label}</p><small>{n.source}</small></li>)}</ol></section><section id="problem" className="pitch-section problem-section"><div><h2>{p.problem.headline}</h2><Loop/></div><ul className="problem-facts">{p.problem.facts.map((f,i)=><li key={f.value}><Reveal index={i}><strong className="tnum">{f.value}</strong><p>{f.text}</p><small>{f.source}</small></Reveal></li>)}</ul></section><Discovery/><section id="solution" className="pitch-section solution-section"><div><h2>{p.solution.headline}</h2><ul>{p.solution.bullets.map(b=><li key={b}>{b}</li>)}</ul><Enter label="See it move"/></div><Comparison/></section><section id="data" className="pitch-section"><h2>{p.data.headline}</h2><div className="data-list">{p.data.items.map((it,i)=><Reveal key={it.title} index={i}><h3>{it.title}</h3><p>{it.text}</p></Reveal>)}</div></section><section id="ai" className="pitch-section ai-section"><h2>{p.ai.headline}</h2><div className="ai-list">{p.ai.items.map((it,i)=><Reveal key={it.title} index={i}><span className="ai-index">{String(i+1).padStart(2,'0')}</span><h3>{it.title}</h3><p>{it.text}</p></Reveal>)}</div></section><section id="world" className="pitch-section world-section"><h2>What world-class programmes do</h2><motion.ul initial={reduced?false:{x:16,opacity:0}} whileInView={{x:0,opacity:1}} viewport={{once:true}} transition={{duration:reduced?0:.5,ease:EASE}}>{p.world.items.map(w=><li key={w.place}><h3>{w.place}</h3><p>{w.lesson}</p></li>)}</motion.ul></section><section id="venture" className="pitch-section venture-section"><Reveal><h2>{p.venture.headline}</h2></Reveal><p>{p.venture.body}</p><Enter label={p.venture.cta}/></section></main><footer className="pitch-footer">{p.footer}</footer></div>;
 }

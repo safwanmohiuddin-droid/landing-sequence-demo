@@ -1,9 +1,13 @@
-# Demo script (3 minutes, no slides) — pack C completes the timings against the live build
+# Demo script, under three minutes
 
-0:00 Load the live URL. "Abu Dhabi licenses a company in six minutes and issues a visa in five days. Then the company waits ten more weeks. Nobody owns the order of steps across government, banks, landlords and schools. This is Northline Payments, twelve people moving from London to ADGM."
-0:30 Point at the red path. "The bank is the critical path: 32 days of review with a 30% chance of a first-time rejection, and the leases wait for a chequebook."
-0:50 Click the bank bar. Set source-of-funds pack, named clients, org chart to Yes. "Risk drops to 12%, review to 23 days. The date moves."
-1:20 Flip "landlord accepts direct debit", then "KYC pack before licence", then "flexi-desk". "Week 13 to week 8. Five weeks of salaries, rent and tax that start earlier."
-1:50 Click Explain on the bank node. Read the Arabic line. Click Draft, bank cover letter. "The model writes the file the bank asks for; the schedule itself is deterministic."
-2:20 Switch to Preset B. "Sixty staff on the mainland: five Emirati hires or AED 45,000 a month, and the tax registration deadline nobody tells you about."
-2:40 Close. "Every plan that runs through this reports real durations. Aggregated, that is the bottleneck map Abu Dhabi does not have today, and the evidence for shared KYC, direct-debit rent and school seat windows. The government made the steps fast. We add the sequence."
+0:00–0:40 Open `/`. Read the three numbers, then scroll the loop and discovery. “Abu Dhabi made every step fast. Nobody owns the order. A company and its people move as a graph.” Field survey and partner measurements remain pending; don't present them as collected.
+
+0:40 Press Enter or choose Enter the demo. Preset A is rendered immediately.
+
+Manual route: select the bank bar. Set source-of-funds, named clients and deck/org chart to Yes. Risk falls from 30% to 12%; review falls from 32 to 23 days. Close. Enable direct-debit rent, early KYC and flexi-desk. Go-live changes from week 13.2 to week 7.8. Explain the bank step in English and Arabic, then Draft paperwork. Missing details are visible placeholders. The Demo mode pill truthfully identifies fallback output. Switch to Preset B: 5 roles and AED 45,000 monthly modelled exposure.
+
+Backup route: press Play demo at 0:40. Its deterministic narration runs for 90 seconds, pauses when the tab loses focus, and ends by 2:10. Escape or Skip demo stops it; Replay restarts from Preset A. The eight-step walkthrough is interactive and separate from autoplay.
+
+2:10–2:40 Close: “Companies pay for the date. Abu Dhabi gets the map. The model does the language; the engine does the dates.” Call durations planning assumptions and describe future actual-duration reporting as the next dataset, not a feature already collecting real cases.
+
+Local URL: http://localhost:5173. Public deployment and submission are deferred at the user's request.

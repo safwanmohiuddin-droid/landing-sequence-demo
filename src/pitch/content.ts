@@ -6,7 +6,7 @@ export const PITCH = {
     numbers: [
       { value: '6 min', label: 'to a trade licence', source: 'TAMM Investor Journey' },
       { value: '5 days', label: 'to a work visa', source: 'Work Bundle, MoHRE and ICP' },
-      { value: '13 weeks', label: 'until the company is operational', source: 'Our model, Preset A, from published ranges and our survey' },
+      { value: '13 weeks', label: 'until the company is operational', source: 'Our model, Preset A; published ranges and team assumptions' },
     ],
     headline: ['Abu Dhabi made every step fast.', 'Nobody owns the order.'],
     sub: 'A relocating company waits months after its six-minute licence, because the steps across government, banks, landlords and schools are done in the wrong sequence. We show the critical path, the date you can plan payroll around, and what to start today.',
@@ -43,11 +43,11 @@ export const PITCH = {
   },
   data: {
     eyebrow: 'Criterion 6 · Unique dataset',
-    headline: 'Every duration has a source. Some of them are ours.',
+    headline: 'Every duration has a source. Better evidence comes next.',
     items: [
-      { title: 'Relocation survey', text: 'Days to Emirates ID, bank account, lease and school seat from people who moved in the last two years. Sample size shown on screen.' },
-      { title: 'Nova Real Estate leasing medians', text: 'Days from enquiry to Tawtheeq for corporate relocators, cheque-count distribution, share of deals needing an employer guarantee.' },
-      { title: 'School availability calls', text: 'FS1, Year 3 and Year 7 availability by curriculum for the January and September intakes, called today.' },
+      { title: 'Relocation survey', text: 'Pending fieldwork: days to Emirates ID, bank account, lease and school seat. No survey sample has been supplied; the demo uses published ranges and team assumptions.' },
+      { title: 'Nova Real Estate leasing medians', text: 'Pending partner data: enquiry-to-Tawtheeq medians, cheque-count distribution and employer guarantee share. These measurements are not yet in the model.' },
+      { title: 'School availability calls', text: 'Pending calls: FS1, Year 3 and Year 7 availability by curriculum and intake. Current school durations use cited published ranges.' },
       { title: 'Published ranges, cited', text: 'Bank review times, visa processing, rent indices, vacancy, Emiratisation and tax rules, each with its source string in the data.' },
     ],
   },
@@ -76,5 +76,6 @@ export const PITCH = {
     body: 'Buyer: the COO or head of people relocating 10 to 200 roles. Channel: ADGM, Hub71, ADRO and PRO firms, who answer sequencing questions by email today. Revenue: a per-relocation fee plus referrals from banks, schools and landlords who want document-complete applicants. Every plan reports real durations. Aggregated, that is the licence-to-operational bottleneck map the emirate does not have, and the evidence for shared KYC, direct-debit rent and school seat windows.',
     cta: 'Enter the demo',
   },
-  footer: 'Hub71+ AI Hackathon, 2 October 2026. Team Visionary. Durations are medians from published ranges and our survey; sources on every bar.',
+  footer: 'Hub71+ AI Hackathon, 2 October 2026. Team Visionary. Durations are planning assumptions from published ranges; sources on every bar. Field survey and partner measurements are pending.',
 };
+

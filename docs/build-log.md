@@ -1,5 +1,13 @@
 # Local integration build log
 
+## 2026-10-02 — Public demo deployment
+
+User authorized the separate public repository `safwanmohiuddin-droid/landing-sequence-demo` and free Vercel deployment. Pushed the completed integration to its main branch, preserving the original remote. Verified `propradar` is an active Hobby team. Excluded test suites and review images from deployment upload. No OpenAI credentials were configured.
+
+Initial production explanation failed because Node ESM could not resolve the extensionless `_lib` import. Added explicit `.js` extensions to all runtime local imports in the four endpoints. The 47 tests and production build passed again. Redeployed successfully to https://landing-sequence-demo.vercel.app. Health plus Explain, Draft, Extract and What-if all return HTTP 200 in mock mode. Browser checks at 1440×900 and 390×844 loaded pitch and workspace, completed explanation with a visible Demo mode pill, and reported no console errors/warnings or page overflow. Evidence: `deployed-1440.png` and `deployed-390.png`.
+
+Vercel's optional GitHub connection failed its repository access check. The successful production deployment is CLI-managed; automatic redeployment on push is not configured. No paid plan or services were enabled. Vercel link created an ignored `.env.local` containing its deployment authentication token; it was not read, committed or uploaded.
+
 ## 2026-10-02 — Engine, screen and AI/pitch integration
 
 Continued the existing repository rather than the unrelated parent project. Integrated remote main's completed engine with the screen continuation and AI/pitch branches on `codex/local-integration`. Preserved frozen model/schema contracts and dependencies. Publication is deferred for local inspection.

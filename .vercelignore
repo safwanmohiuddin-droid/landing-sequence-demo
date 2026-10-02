@@ -1,0 +1,5 @@
+docs/screenshots/
+.agents/
+.codex/
+api/__tests__/
+src/**/__tests__/

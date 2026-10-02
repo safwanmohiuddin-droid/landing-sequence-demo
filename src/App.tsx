@@ -14,6 +14,7 @@ import ObligationCards from './views/ObligationCards';
 import WhatIf from './views/WhatIf';
 import NodeDrawer from './views/NodeDrawer';
 import Tour from './views/Tour';
+import { UiProvider, useUI } from './views/UiContext';
 import { DEMO_STEPS } from './views/Autoplay';
 function resizePeople(plan: Plan, headcount: number): Plan {
   const count = Math.max(1, Math.min(500, Math.round(headcount)));
@@ -39,7 +40,8 @@ function reducer(plan: Plan, action: PlanAction): Plan {
   }
 }
 
-export default function App() {
+function WorkspaceApp() {
+  const { t } = useUI();
   const [plan, baseDispatch] = useReducer(reducer, PRESET_A), [preset, setPreset] = useState<'A' | 'B'>('A');
   const scheduled = useMemo(() => pipeline(plan), [plan]);
   const [node, setNode] = useState<string | null>(null), [autoExplain, setAutoExplain] = useState(false), [tour, setTour] = useState(false), [offerTour, setOfferTour] = useState(false), [demo, setDemo] = useState(false), [playing, setPlaying] = useState(false), [caption, setCaption] = useState(''), [ended, setEnded] = useState(false);
@@ -64,6 +66,9 @@ export default function App() {
     window.addEventListener('keydown', escape); return () => { clearInterval(timer); window.removeEventListener('keydown', escape); };
   }, [playing]);
   function play() { setTour(false); setOfferTour(false); setEnded(false); setCaption(''); setPlaying(p => !p); setNode(null); }
-  return <div className="landing-app"><TopBar plan={plan} preset={preset} dispatch={dispatch} onTour={() => { setOfferTour(false); setTour(true); }} onPlay={play} playing={playing} demo={demo} />{offerTour && !playing && <div className="tour-offer"><span>A guided look at the date, the dependencies and the decisions.</span><button className="ls-text-button" onClick={() => { setOfferTour(false); setTour(true); }}>Take the walkthrough</button><button className="ls-text-button" onClick={() => { setOfferTour(false); try { localStorage.setItem('landing-tour-seen', 'true'); } catch { /* Optional. */ } }}>Dismiss</button></div>}<main className="workspace"><div className="workspace-main"><Timeline scheduled={scheduled} onSelect={select} /><Toggles plan={plan} dispatch={dispatch} /><ObligationCards scheduled={scheduled} /></div><aside className="workspace-aside"><GoLive scheduled={scheduled} /><Keystone scheduled={scheduled} onExplain={id => select(id, true)} /><WhatIf plan={plan} dispatch={dispatch} onAiMode={mode => setDemo(mode === 'mock')} /><StartToday scheduled={scheduled} onSelect={select} /></aside></main><footer className="app-footer">Team Visionary · Planning estimates, sourced on every step. Family settlement may extend beyond company go-live.</footer>{node && scheduled.nodes[node] && <NodeDrawer key={node} id={node} scheduled={scheduled} dispatch={dispatch} onClose={() => setNode(null)} onSelect={select} onAiMode={mode => setDemo(mode === 'mock')} autoExplain={autoExplain} passive={tour || playing} />}{tour && <Tour onClose={() => setTour(false)} onBank={open => { if (open) select('bank_account'); else setNode(null); }} />}{(playing || ended) && <div className="demo-caption" role="status"><span>{caption}</span><button className="ls-btn secondary" onClick={ended ? play : () => { setPlaying(false); setCaption(''); setNode(null); }}>{ended ? 'Replay' : 'Skip demo'}</button>{ended && <button className="ls-text-button" onClick={() => setEnded(false)}>Close</button>}</div>}</div>;
+  return <div className="landing-app"><TopBar plan={plan} preset={preset} dispatch={dispatch} onTour={() => { setOfferTour(false); setTour(true); }} onPlay={play} playing={playing} demo={demo} />{offerTour && !playing && <div className="tour-offer"><span>{t("A guided look at the date, the dependencies and the decisions.")}</span><button className="ls-text-button" onClick={() => { setOfferTour(false); setTour(true); }}>{t("Take the walkthrough")}</button><button className="ls-text-button" onClick={() => { setOfferTour(false); try { localStorage.setItem('landing-tour-seen', 'true'); } catch { /* Optional. */ } }}>{t("Dismiss")}</button></div>}<main className="workspace"><div className="workspace-main"><Timeline scheduled={scheduled} onSelect={select} /><Toggles plan={plan} dispatch={dispatch} /><ObligationCards scheduled={scheduled} /></div><aside className="workspace-aside"><GoLive scheduled={scheduled} /><Keystone scheduled={scheduled} onExplain={id => select(id, true)} /><WhatIf plan={plan} dispatch={dispatch} onAiMode={mode => setDemo(mode === 'mock')} /><StartToday scheduled={scheduled} onSelect={select} /></aside></main><footer className="app-footer">Team Visionary · Planning estimates, sourced on every step. Family settlement may extend beyond company go-live.</footer>{node && scheduled.nodes[node] && <NodeDrawer key={node} id={node} scheduled={scheduled} dispatch={dispatch} onClose={() => setNode(null)} onSelect={select} onAiMode={mode => setDemo(mode === 'mock')} autoExplain={autoExplain} passive={tour || playing} />}{tour && <Tour onClose={() => setTour(false)} onBank={open => { if (open) select('bank_account'); else setNode(null); }} />}{(playing || ended) && <div className="demo-caption" role="status"><span>{caption}</span><button className="ls-btn secondary" onClick={ended ? play : () => { setPlaying(false); setCaption(''); setNode(null); }}>{ended ? 'Replay' : 'Skip demo'}</button>{ended && <button className="ls-text-button" onClick={() => setEnded(false)}>Close</button>}</div>}</div>;
 }
+
+
+export default function App() { return <UiProvider><WorkspaceApp /></UiProvider>; }
 

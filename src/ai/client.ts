@@ -8,11 +8,16 @@ export const aiState: { lastMode: AiMode } = { lastMode: 'mock' };
 
 async function post<TReq, TRes>(path: string, reqSchema: z.ZodType<TReq>, resSchema: z.ZodType<TRes>, body: TReq, fallback: () => TRes, timeoutMs = 35000): Promise<TRes> {
   reqSchema.parse(body);
+  // Vite visual preview has no serverless runtime. Keep it entirely local.
+  if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) {
+    aiState.lastMode = 'mock';
+    await new Promise(resolve => setTimeout(resolve, 600));
+    return resSchema.parse(fallback());
+  }
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: ctrl.signal });
-    clearTimeout(t);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
     const parsed = resSchema.parse(json);

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useUI } from './UiContext';
 const STEPS = [
   ['go-live', 'A date for payroll', 'This is the date you can plan payroll around. It recomputes from every dependency.'],
   ['timeline', 'Follow the red path', 'Red is the critical path. The bank gates the chequebook, the chequebook gates every lease.'],
@@ -10,6 +11,7 @@ const STEPS = [
   ['what-if', 'Ask in plain words', 'The model proposes edits. You approve them. The engine does the dates.'],
 ];
 export default function Tour({ onClose, onBank }: { onClose: () => void; onBank: (open: boolean) => void }) {
+  const { t } = useUI();
   const [step, setStep] = useState(0), [rect, setRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const card = useRef<HTMLDivElement>(null), close = useRef(onClose), bank = useRef(onBank);
   close.current = onClose; bank.current = onBank;
@@ -23,5 +25,5 @@ export default function Tour({ onClose, onBank }: { onClose: () => void; onBank:
   }, [step]);
   function finish() { try { localStorage.setItem('landing-tour-seen', 'true'); } catch { /* Storage is optional. */ } bank.current(false); close.current(); }
   function next() { if (step === STEPS.length - 1) finish(); else setStep(s => s + 1); }
-  return <div className="tour-layer"><div className="tour-spotlight" style={{ transform: `translate(${rect.x}px,${rect.y}px)`, width: rect.width, height: rect.height }} /><div className="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title" tabIndex={-1} ref={card} onKeyDown={e => { if (e.key === 'Escape') finish(); if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft') setStep(s => Math.max(0, s - 1)); if (e.key === 'Tab') { const buttons = Array.from(card.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? []), first = buttons[0], last = buttons[buttons.length - 1]; if (e.shiftKey && (document.activeElement === first || document.activeElement === card.current)) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } } }}><span className="mono-text">{step + 1} of {STEPS.length}</span><h2 id="tour-title">{STEPS[step][1]}</h2><p>{STEPS[step][2]}</p><div className="tour-actions"><button className="ls-text-button" onClick={finish}>Skip</button><button className="ls-btn secondary" disabled={step === 0} onClick={() => setStep(s => s - 1)}>Back</button><button className="ls-btn primary" onClick={next}>{step === STEPS.length - 1 ? 'Finish' : 'Next'}</button></div></div></div>;
+  return <div className="tour-layer"><div className="tour-spotlight" style={{ transform: `translate(${rect.x}px,${rect.y}px)`, width: rect.width, height: rect.height }} /><div className="tour-card" role="dialog" aria-modal="true" aria-labelledby="tour-title" tabIndex={-1} ref={card} onKeyDown={e => { if (e.key === 'Escape') finish(); if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft') setStep(s => Math.max(0, s - 1)); if (e.key === 'Tab') { const buttons = Array.from(card.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? []), first = buttons[0], last = buttons[buttons.length - 1]; if (e.shiftKey && (document.activeElement === first || document.activeElement === card.current)) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } } }}><span className="mono-text">{step + 1} of {STEPS.length}</span><h2 id="tour-title">{t(STEPS[step][1])}</h2><p>{t(STEPS[step][2])}</p><div className="tour-actions"><button className="ls-text-button" onClick={finish}>{t('Skip')}</button><button className="ls-btn secondary" disabled={step === 0} onClick={() => setStep(s => s - 1)}>{t('Back')}</button><button className="ls-btn primary" onClick={next}>{t(step === STEPS.length - 1 ? 'Finish' : 'Next')}</button></div></div></div>;
 }

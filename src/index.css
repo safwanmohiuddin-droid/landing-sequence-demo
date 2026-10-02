@@ -69,3 +69,12 @@ h4 { font-weight:600; font-size:15px; margin-block:24px 10px; }
 /* Mobile keeps the operational date and timeline together. */
 @media(max-width:767px) { .workspace { display:flex; flex-direction:column; }.workspace-aside { display:contents; }.workspace-main { order:1; width:100%; }.go-live { order:0; width:100%; }.keystone { order:2; width:100%; }.what-if { order:3; width:100%; }.start-today { order:4; width:100%; }.node-drawer[open] { position:fixed; z-index:80; }.node-drawer:not(:modal) { box-shadow:0 -12px 40px rgb(12 10 8 / .2); } }
 .node-drawer[open] { position:fixed; z-index:80; }
+/* Inspector contents must not shift controls when focus leaves a bar. */
+.timeline-inspector { height:140px; min-height:140px; overflow:auto; }
+html { position:relative; }
+.timeline-scroll { direction:ltr; }
+[data-theme="night"] .ls-btn.primary,[data-theme="night"] .answer-options button[aria-pressed=true] { color:var(--bg); }
+[dir="rtl"] .landing-app { font-family:'IBM Plex Sans Arabic',system-ui,sans-serif; }
+[dir="rtl"] .switch.on span { transform:translateX(-14px); }
+.utility-button { padding-inline:10px; font-size:11px; }
+@media(max-width:767px) { .topbar-actions { flex-wrap:wrap; }.topbar-actions .utility-button { flex:0 0 auto; }.topbar-actions .ls-btn:not(.utility-button) { flex:1 1 30%; } }

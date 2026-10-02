@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { endpoint } from './_lib';
-import { WhatIfRequest, WhatIfResult } from '../src/ai/schemas';
-import { mockWhatIf } from '../src/ai/mocks';
+import { endpoint } from './_lib.js';
+import { WhatIfRequest, WhatIfResult } from '../src/ai/schemas.js';
+import { mockWhatIf } from '../src/ai/mocks.js';
 // Strict Structured Outputs needs named, required keys. Nullable wire fields
 // are omitted before validating with the frozen public result contract.
 const Wire = z.object({
